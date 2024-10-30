@@ -5,7 +5,8 @@ use App\Http\Controllers\RoomController;
 
 Route::prefix('rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index']);    // Lấy danh sách phòng
-    Route::post('/', [RoomController::class, 'store'])->name('rooms.store');   // Tạo phòng mới
+    Route::get('create', [RoomController::class, 'create'])->name('rooms.create');
+    Route::post('/', [RoomController::class, 'store'])->name('rooms.store');
     Route::get('{id}', [RoomController::class, 'show']);  // Lấy thông tin chi tiết của một phòng
     Route::put('{id}', [RoomController::class, 'update']); // Cập nhật phòng
     Route::delete('{id}', [RoomController::class, 'destroy']); // Xóa phòng
