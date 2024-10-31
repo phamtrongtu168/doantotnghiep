@@ -4,29 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\BookingController;
 
-// Route::post('/register', [UserController::class, 'register']);
-// Route::post('/login', [UserController::class, 'login']);
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-Route::prefix('users')->group(function () {
-    Route::post('register', [UserController::class, 'register']);
-    Route::post('login', [UserController::class, 'login']);
-
-    Route::middleware('auth:api')->group(function () {
-        Route::get('profile', [UserController::class, 'profile']);
-        Route::put('profile', [UserController::class, 'updateProfile']);
-        Route::post('change-password', [UserController::class, 'changePassword']);
-        Route::post('logout', [UserController::class, 'logout']);
-    });
-
-    Route::middleware('auth:api', 'admin')->group(function () {
-        Route::get('/', [UserController::class, 'index']);
-        Route::delete('{id}', [UserController::class, 'destroy']);
-    });
+Route::post('/register', [UserController::class, 'register']);
+Route::post('/login', [UserController::class, 'login']);
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
 });
+
 
 Route::prefix('rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index']);
@@ -36,11 +21,20 @@ Route::prefix('rooms')->group(function () {
     Route::put('{id}', [RoomController::class, 'update'])->name('rooms.update');
     Route::delete('{id}', [RoomController::class, 'destroy'])->name('rooms.destroy');
 });
-
+Route::prefix('bookings')->group(function () {
+    Route::post('/', [BookingController::class, 'store']);
+    Route::get('/{id}', [BookingController::class, 'show']);
+    Route::put('/{id}', [BookingController::class, 'update']);
+    Route::delete('/{id}', [BookingController::class, 'destroy']);
+    Route::get('/availability', [BookingController::class, 'checkAvailability']);
+});
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::get('/test-api', function () {
     return view('test-api');
+});
+Route::get('/rooms-store', function () {
+    return view('rooms-store');
 });

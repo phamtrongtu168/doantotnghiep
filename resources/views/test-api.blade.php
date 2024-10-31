@@ -9,9 +9,6 @@
 
 <body>
 
-
-    <!-- resources/views/rooms/edit.blade.php -->
-
     @extends('layouts.app')
 
     @section('content')
