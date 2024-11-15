@@ -5,8 +5,42 @@ use App\Models\Room;
 use App\Models\RoomImage;
 use Illuminate\Http\Request;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Auth;
 class RoomController extends Controller
 {
+    // Search phòng:
+    public function search(Request $request)
+    {
+        $provinceId = $request->input('province_id');
+        $districtId = $request->input('district_id');
+        $priceFrom = $request->input('price_from', default: 500000);
+        $maxOccupants = $request->input('max_occupants', 1);
+
+        $query = Room::query();
+
+        if ($provinceId != 0) {
+            $query->where('province_id', $provinceId);
+        }
+
+        if ($districtId != 0) {
+            $query->where('district_id', $districtId);
+        }
+
+        if (!is_null($priceFrom)) {
+            $query->where('price', '>=', $priceFrom);
+        }
+
+        if ($maxOccupants != 0) {
+            $query->where('max_occupants', '>=', $maxOccupants);
+        }
+
+        $rooms = $query->paginate(9);
+
+        return response()->json([
+            'success' => true,
+            'data' => $rooms
+        ], 200);
+    }
     // Lấy danh sách phòng: Done
     public function index()
     {
@@ -23,9 +57,60 @@ class RoomController extends Controller
     {
         return view('rooms.create');
     }
+// public function store(Request $request)
+// {
+//     $request->validate([
+//         'name' => 'required|string|max:255',
+//         'description' => 'nullable|string',
+//         'price' => 'required|numeric',
+//         'area' => 'required|numeric',
+//         'max_occupants' => 'required|integer',
+//         'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+//         'air_conditioners' => 'required|integer|min:0',
+//         'kitchens' => 'required|integer|min:0',
+//         'refrigerators' => 'required|integer|min:0',
+//         'washing_machines' => 'required|integer|min:0',
+//         'toilets' => 'required|integer|min:0',
+//         'bathrooms' => 'required|integer|min:0',
+//         'bedrooms' => 'required|integer|min:0'
+
+//     ]);
+//     $data = $request->all();
+//     $data['landlord_id'] = Auth::id();
+
+
+//     $room = Room::create($data);
+
+//     if ($request->hasFile('images')) {
+//         foreach ($request->file('images') as $image) {
+//             if (!$image->isValid()) {
+//                 return response()->json(['error' => 'File upload error: ' . $image->getErrorMessage()], 400);
+//             }
+//             try {
+//                 $uploadResult = Cloudinary::upload($image->getRealPath(), [
+//                     'folder' => 'rooms',
+//                 ]);
+
+//                 RoomImage::create([
+//                     'room_id' => $room->id,
+//                     'image_url' => $uploadResult->getSecurePath(),
+//                 ]);
+
+//             } catch (\Exception $e) {
+//                 return response()->json(['error' => 'Failed to upload image to Cloudinary: ' . $e->getMessage()], 500);
+//             }
+//         }
+//     }
+//     return response()->json($room, 201);
+// }
 public function store(Request $request)
 {
-    $request->validate([
+    $landlordId = Auth::id();
+    if (is_null($landlordId)) {
+        return response()->json(['error' => 'Unauthorized: landlord_id is missing'], 401);
+    }
+
+    $validatedData = $request->validate([
         'name' => 'required|string|max:255',
         'description' => 'nullable|string',
         'price' => 'required|numeric',
@@ -38,31 +123,41 @@ public function store(Request $request)
         'washing_machines' => 'required|integer|min:0',
         'toilets' => 'required|integer|min:0',
         'bathrooms' => 'required|integer|min:0',
-        'bedrooms' => 'required|integer|min:0',
+        'bedrooms' => 'required|integer|min:0'
+
     ]);
-    $room = Room::create($request->all());
-    if ($request->hasFile('images')) {
-        foreach ($request->file('images') as $image) {
-            if (!$image->isValid()) {
-                return response()->json(['error' => 'File upload error: ' . $image->getErrorMessage()], 400);
-            }
-            try {
-                $uploadResult = Cloudinary::upload($image->getRealPath(), [
-                    'folder' => 'rooms',
-                ]);
+    $validatedData['landlord_id'] = $landlordId;
 
-                RoomImage::create([
-                    'room_id' => $room->id,
-                    'image_url' => $uploadResult->getSecurePath(),
-                ]);
+    try {
+        $room = Room::create($validatedData);
 
-            } catch (\Exception $e) {
-                return response()->json(['error' => 'Failed to upload image to Cloudinary: ' . $e->getMessage()], 500);
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                if (!$image->isValid()) {
+                    return response()->json(['error' => 'File upload error: ' . $image->getErrorMessage()], 400);
+                }
+                try {
+                    $uploadResult = Cloudinary::upload($image->getRealPath(), [
+                        'folder' => 'rooms',
+                    ]);
+
+                    RoomImage::create([
+                        'room_id' => $room->id,
+                        'image_url' => $uploadResult->getSecurePath(),
+                    ]);
+
+                } catch (\Exception $e) {
+                    return response()->json(['error' => 'Failed to upload image to Cloudinary: ' . $e->getMessage()], 500);
+                }
             }
         }
+    return response()->json(['message' => 'Room created successfully', 'room' => $room], 201);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Failed to create room: ' . $e->getMessage()], 500);
     }
-    return response()->json($room, 201);
+
 }
+
 //Update phòng: unfinished
 public function update(Request $request, $id)
 {
@@ -70,6 +165,7 @@ public function update(Request $request, $id)
         $room = Room::findOrFail($id);
 
         $request->validate([
+
             'name' => 'string|max:255',
             'description' => 'nullable|string',
             'price' => 'numeric',
@@ -83,6 +179,7 @@ public function update(Request $request, $id)
             'bathrooms' => 'integer|min:0',
             'bedrooms' => 'integer|min:0',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+
         ]);
 
         $room->update($request->all());

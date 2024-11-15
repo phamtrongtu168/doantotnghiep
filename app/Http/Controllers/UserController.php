@@ -17,12 +17,15 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'role' => 'in:user,landlord,admin'
+
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
+            'role' => $request->role ?? 'user'
         ]);
 
         $token = $user->createToken('YourAppName')->plainTextToken;
@@ -51,11 +54,59 @@ class UserController extends Controller
 
         $token = $user->createToken('MyApp')->plainTextToken;
 
-        return response()->json(['token' => $token], 200);
+        return response()->json(['user' => $user, 'token' => $token], 200);
     }
-    // Thiếu get profile
-    // Thiếu change profile
-    // Thiếu update profile
-    // Thiếu change password
-    // Thiếu logout
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+
+        return response()->json([
+            'message' => 'User logged out successfully',
+        ]);
+    }
+
+    // Lấy thông tin người dùng đã xác thực
+    public function user(Request $request)
+    {
+        return response()->json($request->user());
+    }
+
+    // Cập nhật thông tin người dùng
+    public function update(Request $request)
+    {
+        $user = $request->user();
+
+        // Validate các trường cần thiết
+        $validatedData = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'sometimes|required|string|min:6|confirmed',
+        ]);
+
+        if ($request->has('password')) {
+            $validatedData['password'] = Hash::make($validatedData['password']);
+        }
+
+        // Cập nhật thông tin người dùng
+        $user->update($validatedData);
+
+        return response()->json([
+            'message' => 'User information updated successfully',
+            'user' => $user,
+        ]);
+    }
+
+    // Xóa người dùng
+    public function destroy(Request $request)
+    {
+        $user = $request->user();
+
+        // Xóa người dùng
+        $user->delete();
+
+        return response()->json([
+            'message' => 'User deleted successfully',
+        ]);
+    }
+
 }

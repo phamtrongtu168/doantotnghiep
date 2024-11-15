@@ -1,4 +1,3 @@
-<!-- resources/views/rooms/create.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,54 +5,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Room</title>
+    <script>
+    async function storeRoom(event) {
+        event.preventDefault();
+
+        const token = document.getElementById('token').value;
+        const formElement = document.getElementById('roomForm');
+        const formData = new FormData(formElement);
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/rooms", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${"36|zKN4ykvyGZaG3FC9X8Ys0W6zC47n8UDggf7OYRLG02636006"}`,
+                    "Accept": "application/json"
+                },
+                body: formData
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert("Room created successfully!");
+                console.log(result);
+            } else {
+                console.error(result);
+                alert("Error: " + (result.error || "Failed to create room"));
+            }
+        } catch (error) {
+            console.error('Request failed', error);
+            alert("Request failed. Please check console for details.");
+        }
+    }
+    </script>
 </head>
 
 <body>
-    @extends('layouts.app')
+    <h2>Create a New Room</h2>
+    <form id="roomForm" onsubmit="storeRoom(event)" enctype="multipart/form-data">
+        <input type="hidden" id="token" value="YOUR_BEARER_TOKEN_HERE">
 
-    <h1>Create Room</h1>
-    <form action="{{ route('rooms.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <label>Name:</label>
-        <input type="text" name="name" required><br>
+        <div>
+            <label for="name">Room Name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
 
-        <label>Description:</label>
-        <input type="text" name="description"><br>
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description"></textarea>
+        </div>
 
-        <label>Price:</label>
-        <input type="number" name="price" required><br>
+        <div>
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" required>
+        </div>
 
-        <label>Area:</label>
-        <input type="number" name="area" required><br>
+        <div>
+            <label for="area">Area (sqm):</label>
+            <input type="number" id="area" name="area" required>
+        </div>
 
-        <label>Max Occupants:</label>
-        <input type="number" name="max_occupants" required><br>
+        <div>
+            <label for="max_occupants">Max Occupants:</label>
+            <input type="number" id="max_occupants" name="max_occupants" required>
+        </div>
 
-        <label>Air Conditioners:</label>
-        <input type="number" name="air_conditioners" required><br>
+        <div>
+            <label for="air_conditioners">Air Conditioners:</label>
+            <input type="number" id="air_conditioners" name="air_conditioners" min="0" required>
+        </div>
 
-        <label>Kitchens:</label>
-        <input type="number" name="kitchens" required><br>
+        <div>
+            <label for="kitchens">Kitchens:</label>
+            <input type="number" id="kitchens" name="kitchens" min="0" required>
+        </div>
 
-        <label>Refrigerators:</label>
-        <input type="number" name="refrigerators" required><br>
+        <div>
+            <label for="refrigerators">Refrigerators:</label>
+            <input type="number" id="refrigerators" name="refrigerators" min="0" required>
+        </div>
 
-        <label>Washing Machines:</label>
-        <input type="number" name="washing_machines" required><br>
+        <div>
+            <label for="washing_machines">Washing Machines:</label>
+            <input type="number" id="washing_machines" name="washing_machines" min="0" required>
+        </div>
 
-        <label>Toilets:</label>
-        <input type="number" name="toilets" required><br>
+        <div>
+            <label for="toilets">Toilets:</label>
+            <input type="number" id="toilets" name="toilets" min="0" required>
+        </div>
 
-        <label>Bathrooms:</label>
-        <input type="number" name="bathrooms" required><br>
+        <div>
+            <label for="bathrooms">Bathrooms:</label>
+            <input type="number" id="bathrooms" name="bathrooms" min="0" required>
+        </div>
 
-        <label>Bedrooms:</label>
-        <input type="number" name="bedrooms" required><br>
+        <div>
+            <label for="bedrooms">Bedrooms:</label>
+            <input type="number" id="bedrooms" name="bedrooms" min="0" required>
+        </div>
 
-        <label>Images:</label>
-        <input type="file" name="images[]" multiple><br><br>
+        <div>
+            <label for="images">Room Images:</label>
+            <input type="file" id="images.*" name="images[]" accept="image/*" multiple>
+        </div>
 
-        <button type="submit">Create Room</button>
+        <div>
+            <button type="submit">Create Room</button>
+        </div>
     </form>
 </body>
 

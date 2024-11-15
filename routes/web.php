@@ -8,21 +8,51 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\MovingRequestController;
 use App\Http\Controllers\RepairRequestController;
+use App\Http\Controllers\RentalManagementController;
+use App\Http\Controllers\FeedbackController;
+
+
 
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', [UserController::class, 'user']);
+    Route::put('/user', [UserController::class, 'update']);
+    Route::delete('/user', [UserController::class, 'destroy']);
+    Route::post('/logout', [UserController::class, 'logout']);
 });
 
 
-Route::prefix('rooms')->group(function () {
-    Route::get('/', [RoomController::class, 'index']);
-    Route::get('create', [RoomController::class, 'create'])->name('rooms.create');
-    Route::post('/', [RoomController::class, 'store'])->name('rooms.store');
-    Route::get('{id}', [RoomController::class, 'show'])->name('rooms.show');
-    Route::put('{id}', [RoomController::class, 'update'])->name('rooms.update');
-    Route::delete('{id}', [RoomController::class, 'destroy'])->name('rooms.destroy');
+
+
+
+Route::get('/rooms/search', [\App\Http\Controllers\RoomController::class, 'search']);
+
+
+
+// Route::prefix('rooms')->group(function () {
+    // Route::get('/', [RoomController::class, 'index']);
+    // Route::get('create', [RoomController::class, 'create'])->name('rooms.create');
+    // Route::post('/', [RoomController::class, 'store'])->name('rooms.store');
+    // Route::get('{id}', [RoomController::class, 'show'])->name('rooms.show');
+    // Route::put('{id}', [RoomController::class, 'update'])->name('rooms.update');
+    // Route::delete('{id}', [RoomController::class, 'destroy'])->name('rooms.destroy');
+
+// });
+Route::middleware('auth:sanctum')->group(function (): void {
+    Route::get('/rooms', [RoomController::class, 'index']);
+    Route::get('/rooms/create', [RoomController::class, 'create'])->name('rooms.create');
+    Route::post('/rooms', [RoomController::class, 'store'])->name('rooms.store');
+    Route::get('/rooms/{id}', [RoomController::class, 'show'])->name('rooms.show');
+    Route::put('/rooms/{id}', [RoomController::class, 'update'])->name('rooms.update');
+    Route::delete('/rooms/{id}', [RoomController::class, 'destroy'])->name('rooms.destroy');});
+
+
+Route::prefix('api')->group(function () {
+    Route::get('rooms/{roomId}/feedbacks', [FeedbackController::class, 'index']);
+    Route::post('feedbacks', [FeedbackController::class, 'store']);
+    Route::delete('feedbacks/{id}', [FeedbackController::class, 'destroy']);
 });
 Route::prefix('bookings')->group(function () {
     Route::post('/', [BookingController::class, 'store']);
@@ -30,6 +60,12 @@ Route::prefix('bookings')->group(function () {
     Route::put('/{id}', [BookingController::class, 'update']);
     Route::delete('/{id}', [BookingController::class, 'destroy']);
     Route::get('/availability', [BookingController::class, 'checkAvailability']);
+});
+Route::prefix('rental-management')->group(function () {
+    Route::get('/', [RentalManagementController::class, 'index']);
+    Route::post('/', [RentalManagementController::class, 'store']);
+    Route::put('/{id}', [RentalManagementController::class, 'update']);
+    Route::delete('/{id}', [RentalManagementController::class, 'destroy']);
 });
 Route::prefix('services')->group(function () {
     Route::get('/', [ServiceController::class, 'index']);
