@@ -57,52 +57,7 @@ class RoomController extends Controller
     {
         return view('rooms.create');
     }
-// public function store(Request $request)
-// {
-//     $request->validate([
-//         'name' => 'required|string|max:255',
-//         'description' => 'nullable|string',
-//         'price' => 'required|numeric',
-//         'area' => 'required|numeric',
-//         'max_occupants' => 'required|integer',
-//         'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-//         'air_conditioners' => 'required|integer|min:0',
-//         'kitchens' => 'required|integer|min:0',
-//         'refrigerators' => 'required|integer|min:0',
-//         'washing_machines' => 'required|integer|min:0',
-//         'toilets' => 'required|integer|min:0',
-//         'bathrooms' => 'required|integer|min:0',
-//         'bedrooms' => 'required|integer|min:0'
 
-//     ]);
-//     $data = $request->all();
-//     $data['landlord_id'] = Auth::id();
-
-
-//     $room = Room::create($data);
-
-//     if ($request->hasFile('images')) {
-//         foreach ($request->file('images') as $image) {
-//             if (!$image->isValid()) {
-//                 return response()->json(['error' => 'File upload error: ' . $image->getErrorMessage()], 400);
-//             }
-//             try {
-//                 $uploadResult = Cloudinary::upload($image->getRealPath(), [
-//                     'folder' => 'rooms',
-//                 ]);
-
-//                 RoomImage::create([
-//                     'room_id' => $room->id,
-//                     'image_url' => $uploadResult->getSecurePath(),
-//                 ]);
-
-//             } catch (\Exception $e) {
-//                 return response()->json(['error' => 'Failed to upload image to Cloudinary: ' . $e->getMessage()], 500);
-//             }
-//         }
-//     }
-//     return response()->json($room, 201);
-// }
 public function store(Request $request)
 {
     $landlordId = Auth::id();

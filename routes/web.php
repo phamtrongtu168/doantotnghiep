@@ -31,22 +31,22 @@ Route::get('/rooms/search', [\App\Http\Controllers\RoomController::class, 'searc
 
 
 
-// Route::prefix('rooms')->group(function () {
-    // Route::get('/', [RoomController::class, 'index']);
-    // Route::get('create', [RoomController::class, 'create'])->name('rooms.create');
-    // Route::post('/', [RoomController::class, 'store'])->name('rooms.store');
-    // Route::get('{id}', [RoomController::class, 'show'])->name('rooms.show');
-    // Route::put('{id}', [RoomController::class, 'update'])->name('rooms.update');
-    // Route::delete('{id}', [RoomController::class, 'destroy'])->name('rooms.destroy');
+Route::prefix('rooms')->group(function () {
+    Route::get('/', [RoomController::class, 'index']);
+    Route::get('create', [RoomController::class, 'create'])->name('rooms.create');
+    Route::post('/', [RoomController::class, 'store'])->name('rooms.store');
+    Route::get('{id}', [RoomController::class, 'show'])->name('rooms.show');
+    Route::put('{id}', [RoomController::class, 'update'])->name('rooms.update');
+    Route::delete('{id}', [RoomController::class, 'destroy'])->name('rooms.destroy');
 
-// });
-Route::middleware('auth:sanctum')->group(function (): void {
-    Route::get('/rooms', [RoomController::class, 'index']);
-    Route::get('/rooms/create', [RoomController::class, 'create'])->name('rooms.create');
-    Route::post('/rooms', [RoomController::class, 'store'])->name('rooms.store');
-    Route::get('/rooms/{id}', [RoomController::class, 'show'])->name('rooms.show');
-    Route::put('/rooms/{id}', [RoomController::class, 'update'])->name('rooms.update');
-    Route::delete('/rooms/{id}', [RoomController::class, 'destroy'])->name('rooms.destroy');});
+});
+// Route::middleware('auth:sanctum')->group(function (): void {
+//     Route::get('/rooms', [RoomController::class, 'index']);
+//     Route::get('/rooms/create', [RoomController::class, 'create'])->name('rooms.create');
+//     Route::post('/rooms', [RoomController::class, 'store'])->name('rooms.store');
+//     Route::get('/rooms/{id}', [RoomController::class, 'show'])->name('rooms.show');
+//     Route::put('/rooms/{id}', [RoomController::class, 'update'])->name('rooms.update');
+//     Route::delete('/rooms/{id}', [RoomController::class, 'destroy'])->name('rooms.destroy');});
 
 
 Route::prefix('api')->group(function () {
