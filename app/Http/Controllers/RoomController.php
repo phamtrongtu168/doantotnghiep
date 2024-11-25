@@ -16,7 +16,7 @@ class RoomController extends Controller
         $priceFrom = $request->input('price_from', default: 500000);
         $maxOccupants = $request->input('max_occupants', 1);
 
-        $query = Room::query();
+        $query = Room::with('images');
 
         if ($provinceId != 0) {
             $query->where('province_id', $provinceId);
