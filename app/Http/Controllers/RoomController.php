@@ -10,37 +10,38 @@ class RoomController extends Controller
 {
     // Search phòng:
     public function search(Request $request)
-    {
-        $provinceId = $request->input('province_id');
-        $districtId = $request->input('district_id');
-        $priceFrom = $request->input('price_from', default: 500000);
-        $maxOccupants = $request->input('max_occupants', 1);
+{
+    $provinceId = $request->input('province_id');
+    $districtId = $request->input('district_id');
+    $priceFrom = $request->input('price_from', 500000);
+    $maxOccupants = $request->input('max_occupants', 1);
 
-        $query = Room::query();
+    $query = Room::query();
 
-        if ($provinceId != 0) {
-            $query->where('province_id', $provinceId);
-        }
-
-        if ($districtId != 0) {
-            $query->where('district_id', $districtId);
-        }
-
-        if (!is_null($priceFrom)) {
-            $query->where('price', '>=', $priceFrom);
-        }
-
-        if ($maxOccupants != 0) {
-            $query->where('max_occupants', '>=', $maxOccupants);
-        }
-
-        $rooms = $query->paginate(9);
-
-        return response()->json([
-            'success' => true,
-            'data' => $rooms
-        ], 200);
+    if ($provinceId != 0) {
+        $query->where('province_id', $provinceId);
     }
+
+    if ($districtId != 0) {
+        $query->where('district_id', $districtId);
+    }
+
+    if (!is_null($priceFrom)) {
+        $query->where('price', '>=', $priceFrom);
+    }
+
+    if ($maxOccupants != 0) {
+        $query->where('max_occupants', '>=', $maxOccupants);
+    }
+
+    $rooms = $query->with('images')->paginate(9);
+
+    return response()->json([
+        'success' => true,
+        'data' => $rooms
+    ], 200);
+}
+
     // Lấy danh sách phòng: Done
     public function index()
     {

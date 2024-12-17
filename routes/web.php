@@ -6,9 +6,9 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\MovingRequestController;
-use App\Http\Controllers\RepairRequestController;
+use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\RentalManagementController;
+use App\Http\Controllers\RentalBillsController;
 use App\Http\Controllers\FeedbackController;
 
 
@@ -63,9 +63,17 @@ Route::prefix('bookings')->group(function () {
 });
 Route::prefix('rental-management')->group(function () {
     Route::get('/', [RentalManagementController::class, 'index']);
+    Route::get('/{id}', [RentalManagementController::class, 'show']);
     Route::post('/', [RentalManagementController::class, 'store']);
     Route::put('/{id}', [RentalManagementController::class, 'update']);
     Route::delete('/{id}', [RentalManagementController::class, 'destroy']);
+});
+Route::prefix('rental-bills')->group(function () {
+    Route::get('/', [RentalBillsController::class, 'index']);
+    Route::post('/', [RentalBillsController::class,'store']);
+    Route::get('/{id}', [RentalBillsController::class,'show']);
+    Route::put('{id}', [RentalBillsController::class, 'update']);
+    Route::delete('{id}', [RentalBillsController::class, 'destroy']);
 });
 Route::prefix('services')->group(function () {
     Route::get('/', [ServiceController::class, 'index']);
@@ -74,21 +82,12 @@ Route::prefix('services')->group(function () {
     Route::put('{id}', [ServiceController::class, 'update']);
     Route::delete('{id}', [ServiceController::class, 'destroy']);
 });
-
-Route::prefix('moving-requests')->group(function () {
-    Route::get('/', [MovingRequestController::class, 'index']);
-    Route::post('/', [MovingRequestController::class, 'store']);
-    Route::get('{id}', [MovingRequestController::class, 'show']);
-    Route::put('{id}', [MovingRequestController::class, 'update']);
-    Route::delete('{id}', [MovingRequestController::class, 'destroy']);
-});
-
-Route::prefix('repair-requests')->group(function () {
-    Route::get('/', [RepairRequestController::class, 'index']);
-    Route::post('/', [RepairRequestController::class, 'store']);
-    Route::get('{id}', [RepairRequestController::class, 'show']);
-    Route::put('{id}', [RepairRequestController::class, 'update']);
-    Route::delete('{id}', [RepairRequestController::class, 'destroy']);
+Route::prefix('service-requests')->group(function () {
+    Route::get('/', [ServiceRequestController::class, 'index']);
+    Route::post('/', [ServiceRequestController::class, 'store']);
+    Route::get('/{id}', [ServiceRequestController::class, 'show']);
+    Route::put('/{id}', [ServiceRequestController::class, 'update']);
+    Route::delete('/{id}', [ServiceRequestController::class, 'destroy']);
 });
 Route::get('/', function () {
     return view('welcome');

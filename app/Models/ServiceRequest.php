@@ -1,15 +1,25 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RepairRequest extends Model
+class ServiceRequest extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'room_id', 'description', 'request_date', 'service_id'];
+    protected $fillable = [
+        'user_id',
+        'room_id',
+        'service_id',
+        'request_type',
+        'description',
+        'moving_from',
+        'moving_to',
+        'request_date',
+        'service_date',
+        'status',
+    ];
 
     public function user()
     {

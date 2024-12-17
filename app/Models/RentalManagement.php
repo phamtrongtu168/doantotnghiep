@@ -17,6 +17,8 @@ class RentalManagement extends Model
         'start_date',
         'end_date',
         'rent_amount',
+        'electricity_rate',
+        'water_rate',
         'status',
     ];
 
