@@ -16,6 +16,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'null|unique:users,phone|regex:/^([0-9]{10,15})$/',
             'password' => 'required|string|min:6|confirmed',
             'role' => 'in:user,landlord,admin'
 
@@ -80,6 +81,7 @@ class UserController extends Controller
         $validatedData = $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'sometimes|null|unique:users,phone|regex:/^([0-9]{10,15})$/',
             'password' => 'sometimes|required|string|min:6|confirmed',
         ]);
 

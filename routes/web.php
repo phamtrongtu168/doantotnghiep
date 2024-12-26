@@ -16,11 +16,13 @@ use App\Http\Controllers\FeedbackController;
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'user']);
     Route::put('/user', [UserController::class, 'update']);
     Route::delete('/user', [UserController::class, 'destroy']);
     Route::post('/logout', [UserController::class, 'logout']);
+
 });
 
 
@@ -29,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::get('/rooms/search', [\App\Http\Controllers\RoomController::class, 'search']);
 
+Route::get('rooms/available', [RoomController::class, 'getAvailableRooms']);
 
 
 Route::prefix('rooms')->group(function () {
@@ -38,7 +41,6 @@ Route::prefix('rooms')->group(function () {
     Route::get('{id}', [RoomController::class, 'show'])->name('rooms.show');
     Route::put('{id}', [RoomController::class, 'update'])->name('rooms.update');
     Route::delete('{id}', [RoomController::class, 'destroy'])->name('rooms.destroy');
-
 });
 // Route::middleware('auth:sanctum')->group(function (): void {
 //     Route::get('/rooms', [RoomController::class, 'index']);
@@ -46,7 +48,8 @@ Route::prefix('rooms')->group(function () {
 //     Route::post('/rooms', [RoomController::class, 'store'])->name('rooms.store');
 //     Route::get('/rooms/{id}', [RoomController::class, 'show'])->name('rooms.show');
 //     Route::put('/rooms/{id}', [RoomController::class, 'update'])->name('rooms.update');
-//     Route::delete('/rooms/{id}', [RoomController::class, 'destroy'])->name('rooms.destroy');});
+//     Route::delete('/rooms/{id}', [RoomController::class, 'destroy'])->name('rooms.destroy');
+// });
 
 
 Route::prefix('api')->group(function () {
@@ -67,6 +70,10 @@ Route::prefix('rental-management')->group(function () {
     Route::post('/', [RentalManagementController::class, 'store']);
     Route::put('/{id}', [RentalManagementController::class, 'update']);
     Route::delete('/{id}', [RentalManagementController::class, 'destroy']);
+});
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('user/rooms', [RentalManagementController::class, 'getRoomsForUser']);
+
 });
 Route::prefix('rental-bills')->group(function () {
     Route::get('/', [RentalBillsController::class, 'index']);

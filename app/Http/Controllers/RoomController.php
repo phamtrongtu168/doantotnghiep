@@ -6,6 +6,7 @@ use App\Models\RoomImage;
 use Illuminate\Http\Request;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 class RoomController extends Controller
 {
     // Search phòng:
@@ -48,12 +49,22 @@ class RoomController extends Controller
         $rooms = Room::with('images')->get();
         return response()->json($rooms);
     }
+    public function getAvailableRooms(Request $request)
+{
+    $rooms = Room::whereDoesntHave('rentalManagement', function ($query) {
+        $query->whereIn('status', ['active', 'pending']);
+    })
+    ->with('images', 'landlord')
+    ->paginate($request->get('per_page', 10));
+
+    return response()->json($rooms, 200);
+}
     // Lấy chi tiết phòng: Done
     public function show($id)
-    {
-        $room = Room::with('images')->findOrFail($id);
-        return response()->json($room);
-    }
+{
+    $room = Room::with(['images', 'landlord'])->findOrFail($id);
+    return response()->json($room);
+}
     public function create()
     {
         return view('rooms.create');
@@ -79,7 +90,13 @@ public function store(Request $request)
         'washing_machines' => 'required|integer|min:0',
         'toilets' => 'required|integer|min:0',
         'bathrooms' => 'required|integer|min:0',
-        'bedrooms' => 'required|integer|min:0'
+        'bedrooms' => 'required|integer|min:0',
+        'wifi' => 'null|integer|min:0',
+        'electricity_rate' => 'null|numeric',
+        'water_rate' => 'null|numeric',
+        'province_id' => 'null|integer|exists:provinces,id',
+        'district_id' => 'null|integer|exists:districts,id',
+        'address' => 'null|string|max:255',
 
     ]);
     $validatedData['landlord_id'] = $landlordId;
@@ -134,7 +151,14 @@ public function update(Request $request, $id)
             'toilets' => 'integer|min:0',
             'bathrooms' => 'integer|min:0',
             'bedrooms' => 'integer|min:0',
+            'wifi' => 'integer|min:0',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'electricity_rate' => 'numeric',
+            'water_rate' => 'numeric',
+            'province_id' => 'integer|exists:provinces,id',
+            'district_id' => 'integer|exists:districts,id',
+            'address' => 'string|max:255',
+
 
         ]);
 

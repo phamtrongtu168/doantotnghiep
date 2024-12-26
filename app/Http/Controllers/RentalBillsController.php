@@ -5,83 +5,103 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\RentalBills;
 class RentalBillsController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+{public function index()
     {
-        $bills = RentalBills::with('rental')->get();
-        return response()->json($bills);
+        $query = RentalBills::query();
+        // Nếu muốn sử dụng phân trang (9 bản ghi mỗi trang)
+        $rentalBills = $query->paginate(9);
+
+        return response()->json([
+            'message' => 'Rental bills retrieved successfully.',
+            'data' => $rentalBills
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Tạo một hóa đơn mới
     public function store(Request $request)
     {
         try {
-            // Validate the incoming request data
             $validated = $request->validate([
-                'rental_id' => 'required|exists:rental_management,id',
-                'month' => 'required|date_format:Y-m',
-                'electricity_usage' => 'required|numeric',
-                'water_usage' => 'required|numeric',
+                'rental_id' => 'required|exists:rental_managements,id',
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after_or_equal:start_date',
+                'electricity_usage' => 'nullable|numeric|min:0',
+                'water_usage' => 'nullable|numeric|min:0',
+                'status' => 'nullable|in:pending,paid,overdue',
             ]);
 
-            // Create a new rental bill record
             $rentalBill = RentalBills::create($validated);
 
-            // Return a successful response with the created bill
             return response()->json([
-                'message' => 'Rental bill created successfully',
-                'bill' => $rentalBill
+                'message' => 'Rental bill created successfully.',
+                'data' => $rentalBill
             ], 201);
-
-        } catch (\Illuminate\Database\QueryException $e) {
-            // Handle database query exceptions
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
-                'error' => 'Database error: ' . $e->getMessage()
-            ], 500);
-
+                'message' => 'Validation error.',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
-            // Handle other general exceptions
             return response()->json([
-                'error' => 'An unexpected error occurred: ' . $e->getMessage()
+                'message' => 'An error occurred while creating the rental bill.',
+                'error' => $e->getMessage()
             ], 500);
-        }x
-     }
+        }
+    }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    // Lấy thông tin chi tiết của một hóa đơn
+    public function show($id)
     {
-        $bill = RentalBills::with('rental')->findOrFail($id);
-        return response()->json($bill);    }
+        $rentalBill = RentalBills::find($id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+        if (!$rentalBill) {
+            return response()->json([
+                'message' => 'Rental bill not found.',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Rental bill retrieved successfully.',
+            'data' => $rentalBill
+        ]);
+    }
+
+    // Cập nhật thông tin hóa đơn
+    public function update(Request $request, $id)
     {
+        $rentalBill = RentalBills::find($id);
+
+        if (!$rentalBill) {
+            return response()->json(['message' => 'Rental bill not found.'], 404);
+        }
+
         $validated = $request->validate([
-            'electricity_usage' => 'required|numeric',
-            'water_usage' => 'required|numeric',
+            'start_date' => 'sometimes|date',
+            'end_date' => 'sometimes|date|after_or_equal:start_date',
+            'electricity_usage' => 'sometimes|numeric|min:0',
+            'water_usage' => 'sometimes|numeric|min:0',
+            'status' => 'sometimes|in:pending,paid,overdue',
         ]);
 
-        $bill = RentalBills::findOrFail($id);
-        $bill->update($validated);
+        $rentalBill->update($validated);
 
-        return response()->json(['message' => 'Rental bill updated successfully', 'bill' => $bill]);    }
+        return response()->json([
+            'message' => 'Rental bill updated successfully.',
+            'data' => $rentalBill
+        ]);
+    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    // Xóa một hóa đơn
+    public function destroy($id)
     {
-        $bill = RentalBills::findOrFail($id);
-        $bill->delete();
-        return response()->json(['message' => 'Rental bill deleted successfully']);
+        $rentalBill = RentalBills::find($id);
+
+        if (!$rentalBill) {
+            return response()->json(['message' => 'Rental bill not found.'], 404);
+        }
+
+        $rentalBill->delete();
+
+        return response()->json(['message' => 'Rental bill deleted successfully.']);
     }
 }

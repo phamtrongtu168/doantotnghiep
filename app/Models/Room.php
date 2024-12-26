@@ -13,6 +13,7 @@ class Room extends Model
     protected $fillable = [
 
         'name',
+        'landlord_id',
         'description',
         'price',
         'area',
@@ -24,13 +25,15 @@ class Room extends Model
         'toilets',
         'bathrooms',
         'bedrooms',
+        'wifi',
+        'electricity_rate',
+        'water_rate',
         'province_id',
         'district_id',
          'address',
         'image_url',
         'province_id',
         'district_id',
-        'landlord_id',
     ];
 
     public function images()
@@ -41,4 +44,13 @@ class Room extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function landlord()
+    {
+    return $this->belongsTo(User::class, 'landlord_id');
+    }
+    public function rentalManagement()
+{
+    return $this->hasMany(RentalManagement::class, 'room_id');
+}
+
 }

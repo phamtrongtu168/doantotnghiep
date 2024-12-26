@@ -8,32 +8,39 @@ class RentalManagement extends Model
 {
     use HasFactory;
 
-    protected $table = 'rental_management';
+    protected $table = 'rental_managements';
 
+    // Các trường có thể được gán giá trị một cách trực tiếp
     protected $fillable = [
         'room_id',
         'tenant_id',
-        'landlord_id',
         'start_date',
         'end_date',
-        'rent_amount',
-        'electricity_rate',
-        'water_rate',
         'status',
     ];
 
+    // Các trạng thái của hợp đồng
+    const STATUS_ACTIVE = 'active';
+    const STATUS_PENDING = 'pending';
+    const STATUS_COMPLETED = 'completed';
+    const STATUS_CANCELLED = 'cancelled';
+
+    // Quan hệ với Rooms
     public function room()
     {
-    return $this->belongsTo(Room::class);
+        return $this->belongsTo(Room::class, 'room_id');
     }
 
+    // Quan hệ với Users (Tenant)
     public function tenant()
     {
-    return $this->belongsTo(User::class, 'tenant_id');
+        return $this->belongsTo(User::class, 'tenant_id');
     }
 
-    public function landlord()
+    // Quan hệ với RentalBills
+    public function rentalBills()
     {
-    return $this->belongsTo(User::class, 'landlord_id');
+        return $this->hasMany(RentalBills::class, 'rental_id');
     }
+
 }

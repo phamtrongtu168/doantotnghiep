@@ -21,6 +21,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
         'role'
 
@@ -47,5 +48,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+public function serviceRequests()
+    {
+    return $this->hasMany(ServiceRequest::class, 'staff_id');
     }
 }

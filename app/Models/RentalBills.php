@@ -9,41 +9,26 @@ class RentalBills extends Model
 {
     use HasFactory;
 
-    // Tên bảng
     protected $table = 'rental_bills';
 
-    // Các trường được phép gán dữ liệu
+    // Các trường có thể được gán giá trị một cách trực tiếp
     protected $fillable = [
         'rental_id',
-        'month',
+        'start_date',
+        'end_date',
         'electricity_usage',
         'water_usage',
+        'status',
     ];
 
-    // Các trường không cần gán thủ công (tự động tính toán hoặc tự động tạo)
-    protected $appends = ['electricity_cost', 'water_cost', 'total_cost'];
+    // Các trạng thái hóa đơn
+    const STATUS_PENDING = 'pending';
+    const STATUS_PAID = 'paid';
+    const STATUS_OVERDUE = 'overdue';
 
-    // Quan hệ với bảng RentalManagement
-    public function rental()
+    // Quan hệ với RentalManagement
+    public function rentalManagement()
     {
         return $this->belongsTo(RentalManagement::class, 'rental_id');
-    }
-
-    // Accessor: Tính toán `electricity_cost`
-    public function getElectricityCostAttribute()
-    {
-        return $this->electricity_usage * $this->rental->electricity_rate;
-    }
-
-    // Accessor: Tính toán `water_cost`
-    public function getWaterCostAttribute()
-    {
-        return $this->water_usage * $this->rental->water_rate;
-    }
-
-    // Accessor: Tính toán `total_cost`
-    public function getTotalCostAttribute()
-    {
-        return $this->electricity_cost + $this->water_cost + $this->rental->rent_amount;
     }
 }

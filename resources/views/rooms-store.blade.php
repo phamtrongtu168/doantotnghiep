@@ -17,7 +17,8 @@
             const response = await fetch("http://127.0.0.1:8000/rooms", {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${"36|zKN4ykvyGZaG3FC9X8Ys0W6zC47n8UDggf7OYRLG02636006"}`,
+                    "Authorization": `Bearer 77|5HM4D4YtuIvVKYmEqv9RkagBcpVYlvoFSS5yrAVz97b09e47`,
+                    "X-CSRF-TOKEN": token, // Gửi token CSRF
                     "Accept": "application/json"
                 },
                 body: formData
@@ -42,7 +43,7 @@
 <body>
     <h2>Create a New Room</h2>
     <form id="roomForm" onsubmit="storeRoom(event)" enctype="multipart/form-data">
-        <input type="hidden" id="token" value="YOUR_BEARER_TOKEN_HERE">
+        <input type="hidden" id="token" value="77|5HM4D4YtuIvVKYmEqv9RkagBcpVYlvoFSS5yrAVz97b09e47">
 
         <div>
             <label for="name">Room Name:</label>

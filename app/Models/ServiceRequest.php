@@ -19,6 +19,7 @@ class ServiceRequest extends Model
         'request_date',
         'service_date',
         'status',
+        'staff_id',
     ];
 
     public function user()
